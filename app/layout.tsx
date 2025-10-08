@@ -29,6 +29,23 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta
+          name="fc:miniapp"
+          content='{
+            "version": "next",
+            "imageUrl": "https://rundinorun.vercel.app/dino-hero.svg",
+            "button": {
+              "title": "Play DinoRun",
+              "action": {
+                "type": "launch_frame",
+                "url": "https://rundinorun.vercel.app",
+                "name": "DinoRun",
+                "splashImageUrl": "https://rundinorun.vercel.app/splash.jpg",
+                "splashBackgroundColor": "#6200EA"
+              }
+            }
+          }'
+        />
       </head>
       <body className="font-sans antialiased">{children}</body>
     </html>
