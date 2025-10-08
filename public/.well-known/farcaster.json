@@ -10,7 +10,7 @@
   },
   "miniapp": {
     "name": "DinoRun",
-    "version": "2",
+    "version": "1",
     "iconUrl": "https://1rundinorun.vercel.app/icon.png?v=2",
     "homeUrl": "https://1rundinorun.vercel.app",
     "imageUrl": "https://1rundinorun.vercel.app/image.jpg?v=2",
