@@ -119,8 +119,15 @@ export default function DinoGame() {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    canvas.width = 800
-    canvas.height = 400
+    // Responsive canvas sizing
+    const maxWidth = Math.min(800, window.innerWidth - 32) // 16px padding on each side
+    const aspectRatio = 2 // 2:1 aspect ratio
+    canvas.width = maxWidth
+    canvas.height = maxWidth / aspectRatio
+    
+    // Set CSS size to match the canvas size
+    canvas.style.width = `${maxWidth}px`
+    canvas.style.height = `${maxWidth / aspectRatio}px`
     const groundY = canvas.height - 50
 
     const game = gameStateRef.current
@@ -132,8 +139,8 @@ export default function DinoGame() {
       setHighScore(Number.parseInt(savedHighScore))
     }
 
-    const DINO_WIDTH = 40
-    const DINO_HEIGHT = 60
+    const DINO_WIDTH = Math.max(30, canvas.width / 20) // Responsive dino size
+    const DINO_HEIGHT = Math.max(45, canvas.width / 13) // Responsive dino size
     const JUMP_FORCE = -15
     const GRAVITY = 0.8
 
@@ -151,14 +158,16 @@ export default function DinoGame() {
     function drawDino() {
       const dino = game.dino
       ctx.save()
-      ctx.font = "50px Arial"
+      const fontSize = Math.max(30, canvas.width / 16) // Responsive font size
+      ctx.font = `${fontSize}px Arial`
       ctx.textBaseline = "bottom"
       ctx.fillText("🦕", dino.x, dino.y + DINO_HEIGHT)
       ctx.restore()
     }
 
     function drawObstacle(obs: any) {
-      ctx.font = "40px Arial"
+      const fontSize = Math.max(24, canvas.width / 20) // Responsive font size
+      ctx.font = `${fontSize}px Arial`
       ctx.textBaseline = "bottom"
       const obstacleType = obstacleTypes.find((t) => t.type === obs.type)
       if (obstacleType) {
@@ -177,7 +186,8 @@ export default function DinoGame() {
 
     function drawScore() {
       ctx.fillStyle = game.nitroBoost ? "#FF6B6B" : "#333"
-      ctx.font = "bold 24px Arial"
+      const fontSize = Math.max(16, canvas.width / 33) // Responsive font size
+      ctx.font = `bold ${fontSize}px Arial`
       ctx.fillText(`Score: ${Math.floor(game.score)}`, 10, 30)
     }
 
@@ -297,7 +307,8 @@ export default function DinoGame() {
         ctx.fillStyle = "rgba(255, 107, 107, 0.3)"
         ctx.fillRect(0, 0, canvas.width, canvas.height)
         ctx.fillStyle = "#FF6B6B"
-        ctx.font = "bold 20px Arial"
+        const fontSize = Math.max(14, canvas.width / 40) // Responsive font size
+        ctx.font = `bold ${fontSize}px Arial`
         ctx.fillText("🔥 NITRO BOOST! 🔥", canvas.width / 2 - 100, 60)
       }
 
@@ -541,8 +552,8 @@ export default function DinoGame() {
           <div className="flex justify-center">
             <canvas
               ref={canvasRef}
-              className="border-2 border-white/30 rounded-lg max-w-full"
-              style={{ display: "block" }}
+              className="border-2 border-white/30 rounded-lg max-w-full h-auto"
+              style={{ display: "block", width: "100%", maxWidth: "800px" }}
             />
           </div>
 
