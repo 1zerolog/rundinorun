@@ -1,31 +1,37 @@
 {
-  "frame": {
-    "name": "DinoRun",
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "baseBuilder": {
+    "allowedAddresses": []
+  },
+  "miniapp": {
     "version": "1",
-    "iconUrl": "https://1rundinorun.vercel.app/icon.jpg",
+    "name": "DinoRun",
     "homeUrl": "https://1rundinorun.vercel.app",
-    "imageUrl": "https://1rundinorun.vercel.app/image.jpg",
-    "buttonTitle": "Dino Go!",
+    "iconUrl": "https://1rundinorun.vercel.app/icon.jpg",
     "splashImageUrl": "https://1rundinorun.vercel.app/splash.jpg",
     "splashBackgroundColor": "#6200EA",
     "webhookUrl": "https://1rundinorun.vercel.app/api/webhook",
     "subtitle": "Jump, dodge, mint NFTs",
     "description": "Retro dino runner on Base. Jump obstacles, collect boosts, chase high scores, and mint your run as NFT.",
-    "primaryCategory": "games",
     "screenshotUrls": [
       "https://1rundinorun.vercel.app/dino-screenshot.svg"
     ],
-    "heroImageUrl": "https://1rundinorun.vercel.app/image.jpg",
+    "primaryCategory": "games",
     "tags": [
       "jump",
       "game",
       "run",
       "enjoy"
     ],
+    "heroImageUrl": "https://1rundinorun.vercel.app/image.jpg",
     "tagline": "Run Fast. Mint Faster.",
     "ogTitle": "Run, Jump, and Mint",
-    "ogImageUrl": "https://1rundinorun.vercel.app/image.jpg",
     "ogDescription": "Outrun extinction. Mint your glory on Base.",
-    "castShareUrl": "https://warpcast.com/~/compose?text=Just+played+DinoRun+on+Farcaster!+Jump%2C+score+and+mint+NFTs+on+Base.+Can+you+beat+my+score?"
-  },
+    "ogImageUrl": "https://1rundinorun.vercel.app/image.jpg",
+    "noindex": false
+  }
 }
