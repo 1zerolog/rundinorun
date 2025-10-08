@@ -10,7 +10,7 @@
   "miniapp": {
     "version": "1",
     "name": "DinoRun",
-    "subtitle": "Jump, dodge & mint NFTs",
+    "subtitle": "Jump, dodge, mint NFTs",
     "description": "Fast-paced retro dino runner. Jump obstacles, collect boosts, compete for high scores, and mint your achievements as NFTs on Base network.",
     "primaryCategory": "games",
     "tags": ["game", "dino", "runner", "nft", "base", "arcade"],
