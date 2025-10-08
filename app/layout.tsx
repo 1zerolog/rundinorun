@@ -33,9 +33,9 @@ export default function RootLayout({
           name="fc:miniapp"
           content='{
             "version": "next",
-            "imageUrl": "https://1rundinorun.vercel.app/dino-hero.svg",
+            "imageUrl": "https://1rundinorun.vercel.app/image.jpg",
             "button": {
-              "title": "Play DinoRun",
+              "title": "Dino Go!",
               "action": {
                 "type": "launch_frame",
                 "url": "https://1rundinorun.vercel.app",
