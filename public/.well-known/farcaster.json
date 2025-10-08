@@ -1,0 +1,33 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjI4MjY1MSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzOGNGQ0QxZTVFMEFkZkM4ZUZmQzMxNzg3MmY4YWU5MjkxMjdGMjgifQ",
+    "payload": "eyJkb21haW4iOiJydW5kaW5vcnVuLnZlcmNlbC5hcHAifQ",
+    "signature": "vAOc/SH05c9yGWiZXTdlIYIWWMsbjHinNmzehL8ZfahBJxUEDarw5nZE7h+/7n/AQ62M33ahfR1DZ/D64BWg4Rw="
+  },
+  "baseBuilder": {
+    "allowedAddresses": ["0xe1bf2Dd72A8A026bEb20d8bF75276DF260507eFc"]
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "DinoRun",
+    "subtitle": "Jump, dodge & mint NFTs",
+    "description": "Fast-paced retro dino runner. Jump obstacles, collect boosts, compete for high scores, and mint your achievements as NFTs on Base network.",
+    "primaryCategory": "games",
+    "tags": ["game", "dino", "runner", "nft", "base", "arcade"],
+    "homeUrl": "https://rundinorun.vercel.app",
+    "webhookUrl": "https://rundinorun.vercel.app/api/webhook",
+    "iconUrl": "https://rundinorun.vercel.app/icon.jpg",
+    "imageUrl": "https://rundinorun.vercel.app/image.jpg",
+    "screenshotUrls": ["https://rundinorun.vercel.app/dino-screenshot.svg"],
+    "splashImageUrl": "https://rundinorun.vercel.app/splash.jpg",
+    "splashBackgroundColor": "#6200EA",
+    "heroImageUrl": "https://rundinorun.vercel.app/image.jpg",
+    "tagline": "Jump, Score & Mint on Base",
+    "buttonTitle": "Play DinoRun",
+    "ogTitle": "DinoRun - Jump & Mint NFTs",
+    "ogDescription": "Jump over obstacles, survive as long as possible, and mint your high scores as NFTs on Base network!",
+    "ogImageUrl": "https://rundinorun.vercel.app/image.jpg",
+    "castShareUrl": "https://warpcast.com/~/compose?text=Just+played+DinoRun+on+Farcaster!+Can+you+beat+my+score?",
+    "noindex": false
+  }
+}
