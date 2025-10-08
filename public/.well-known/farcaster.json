@@ -1,6 +1,14 @@
 
 {
-  "frame": {
+  "accountAssociation": {
+    "header": "eyJmaWQiOjI4MjY1MSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzOGNGQ0QxZTVFMEFkZkM4ZUZmQzMxNzg3MmY4YWU5MjkxMjdGMjgifQ",
+    "payload": "eyJkb21haW4iOiIxcnVuZGlub3J1bi52ZXJjZWwuYXBwIn0",
+    "signature": "DO52PPRJ/0PMzI/AqVf+k9bspWUMb2+vM84X2RFSRO4Ga920q965+afT86oON/GS5d1RmrWTh9z1z3NB55IOWhw="
+  },
+  "baseBuilder": {
+    "allowedAddresses": ["0xe1bf2Dd72A8A026bEb20d8bF75276DF260507eFc"]
+  },
+  "miniapp": {
     "name": "DinoRun",
     "version": "1",
     "iconUrl": "https://1rundinorun.vercel.app/icon.png",
@@ -26,11 +34,7 @@
     "tagline": "Survive. Score. Mint.",
     "ogTitle": "Run, Jump, and Mint",
     "ogDescription": "Outrun extinction. Mint your glory on Base.",
-    "ogImageUrl": "https://1rundinorun.vercel.app/image.jpg"
-  },
-  "accountAssociation": {
-    "header": "eyJmaWQiOjI4MjY1MSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzOGNGQ0QxZTVFMEFkZkM4ZUZmQzMxNzg3MmY4YWU5MjkxMjdGMjgifQ",
-    "payload": "eyJkb21haW4iOiIxcnVuZGlub3J1bi52ZXJjZWwuYXBwIn0",
-    "signature": "DO52PPRJ/0PMzI/AqVf+k9bspWUMb2+vM84X2RFSRO4Ga920q965+afT86oON/GS5d1RmrWTh9z1z3NB55IOWhw="
+    "ogImageUrl": "https://1rundinorun.vercel.app/image.jpg",
+    "noindex": false
   }
 }
