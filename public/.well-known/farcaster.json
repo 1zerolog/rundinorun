@@ -6,7 +6,7 @@
     "signature": "DO52PPRJ/0PMzI/AqVf+k9bspWUMb2+vM84X2RFSRO4Ga920q965+afT86oON/GS5d1RmrWTh9z1z3NB55IOWhw="
   },
   "baseBuilder": {
-    "allowedAddresses": ["0xe1bf2Dd72A8A026bEb20d8bF75276DF260507eFc"]
+    "allowedAddresses": ["0x138cFCD1e5E0AdfC8eFfC317872f8ae929127F28"]
   },
   "miniapp": {
     "name": "DinoRun",

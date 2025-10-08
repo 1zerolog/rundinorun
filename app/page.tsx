@@ -119,9 +119,10 @@ export default function DinoGame() {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // Responsive canvas sizing
-    const maxWidth = Math.min(800, window.innerWidth - 32) // 16px padding on each side
-    const aspectRatio = 2 // 2:1 aspect ratio
+    // iPhone 16 Pro optimized canvas sizing
+    const isMobile = window.innerWidth < 1024
+    const maxWidth = isMobile ? Math.min(window.innerWidth - 24, 400) : 800 // Much larger on mobile
+    const aspectRatio = 1.5 // More square ratio for mobile
     canvas.width = maxWidth
     canvas.height = maxWidth / aspectRatio
     
@@ -139,8 +140,8 @@ export default function DinoGame() {
       setHighScore(Number.parseInt(savedHighScore))
     }
 
-    const DINO_WIDTH = Math.max(30, canvas.width / 20) // Responsive dino size
-    const DINO_HEIGHT = Math.max(45, canvas.width / 13) // Responsive dino size
+    const DINO_WIDTH = Math.max(50, canvas.width / 8) // Much larger dino for mobile
+    const DINO_HEIGHT = Math.max(80, canvas.width / 5) // Much larger dino for mobile
     const JUMP_FORCE = -15
     const GRAVITY = 0.8
 
@@ -158,7 +159,7 @@ export default function DinoGame() {
     function drawDino() {
       const dino = game.dino
       ctx.save()
-      const fontSize = Math.max(30, canvas.width / 16) // Responsive font size
+      const fontSize = Math.max(60, canvas.width / 6) // Much larger dino emoji
       ctx.font = `${fontSize}px Arial`
       ctx.textBaseline = "bottom"
       ctx.fillText("🦕", dino.x, dino.y + DINO_HEIGHT)
@@ -166,7 +167,7 @@ export default function DinoGame() {
     }
 
     function drawObstacle(obs: any) {
-      const fontSize = Math.max(24, canvas.width / 20) // Responsive font size
+      const fontSize = Math.max(40, canvas.width / 10) // Much larger obstacles
       ctx.font = `${fontSize}px Arial`
       ctx.textBaseline = "bottom"
       const obstacleType = obstacleTypes.find((t) => t.type === obs.type)
@@ -186,9 +187,9 @@ export default function DinoGame() {
 
     function drawScore() {
       ctx.fillStyle = game.nitroBoost ? "#FF6B6B" : "#333"
-      const fontSize = Math.max(16, canvas.width / 33) // Responsive font size
+      const fontSize = Math.max(24, canvas.width / 16) // Much larger score text
       ctx.font = `bold ${fontSize}px Arial`
-      ctx.fillText(`Score: ${Math.floor(game.score)}`, 10, 30)
+      ctx.fillText(`Score: ${Math.floor(game.score)}`, 10, 40)
     }
 
     function jump() {
@@ -501,11 +502,11 @@ export default function DinoGame() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center p-4">
-      <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 max-w-4xl w-full shadow-2xl border border-white/20">
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-black text-white mb-4">🦕 DinoRun</h1>
-          <p className="text-white/80 text-lg">Fast and Retro dino runner game</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-4 sm:p-8 max-w-4xl w-full shadow-2xl border border-white/20">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-4xl sm:text-5xl font-black text-white mb-2 sm:mb-4">🦕 DinoRun</h1>
+          <p className="text-white/80 text-base sm:text-lg">Fast and Retro dino runner game</p>
 
           <div className="mt-4">
             {farcasterUser && (
@@ -535,7 +536,7 @@ export default function DinoGame() {
           </div>
         </div>
 
-        <div className="bg-black/20 rounded-2xl p-6 mb-6">
+        <div className="bg-black/20 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="flex justify-between items-center mb-4">
             <div className="flex gap-6">
               <div className="text-center">
@@ -553,11 +554,11 @@ export default function DinoGame() {
             <canvas
               ref={canvasRef}
               className="border-2 border-white/30 rounded-lg max-w-full h-auto"
-              style={{ display: "block", width: "100%", maxWidth: "800px" }}
+              style={{ display: "block", width: "100%", maxWidth: "400px" }}
             />
           </div>
 
-          <div className="flex justify-center gap-4 mt-6 flex-wrap">
+          <div className="flex justify-center gap-2 sm:gap-4 mt-4 sm:mt-6 flex-wrap">
             <button
               onClick={() => {
                 const game = gameStateRef.current
@@ -566,26 +567,26 @@ export default function DinoGame() {
                   game.dino.isJumping = true
                 }
               }}
-              className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              className="px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 text-sm sm:text-base"
             >
               🦘 Jump
             </button>
             <button
               onClick={handleRestart}
-              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              className="px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 text-sm sm:text-base"
             >
               🔄 Restart
             </button>
             <button
               onClick={handleShare}
-              className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+              className="px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 text-sm sm:text-base"
             >
-              📤 Share on Farcaster
+              📤 Share
             </button>
             <button
               onClick={mintNFT}
               disabled={isMinting || mintSuccess || !walletAddress}
-              className={`px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all ${
+              className={`px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all text-sm sm:text-base ${
                 isMinting || mintSuccess || !walletAddress
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:scale-105 active:scale-95"
