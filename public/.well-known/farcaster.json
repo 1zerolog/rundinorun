@@ -28,12 +28,4 @@
     "ogDescription": "Outrun extinction. Mint your glory on Base.",
     "castShareUrl": "https://warpcast.com/~/compose?text=Just+played+DinoRun+on+Farcaster!+Jump%2C+score+and+mint+NFTs+on+Base.+Can+you+beat+my+score?"
   },
-  "baseBuilder": {
-    "allowedAddresses": ["0xe1bf2Dd72A8A026bEb20d8bF75276DF260507eFc"]
-  },
-  "accountAssociation": {
-    "header": "eyJmaWQiOjI4MjY1MSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzOGNGQ0QxZTVFMEFkZkM4ZUZmQzMxNzg3MmY4YWU5MjkxMjdGMjgifQ",
-    "payload": "eyJkb21haW4iOiIxcnVuZGlub3J1bi52ZXJjZWwuYXBwIn0",
-    "signature": "DO52PPRJ/0PMzI/AqVf+k9bspWUMb2+vM84X2RFSRO4Ga920q965+afT86oON/GS5d1RmrWTh9z1z3NB55IOWhw="
-  }
 }
