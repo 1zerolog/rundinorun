@@ -10,10 +10,10 @@
   },
   "miniapp": {
     "name": "DinoRun",
-    "version": "1",
-    "iconUrl": "https://1rundinorun.vercel.app/icon.png",
+    "version": "2",
+    "iconUrl": "https://1rundinorun.vercel.app/icon.png?v=2",
     "homeUrl": "https://1rundinorun.vercel.app",
-    "imageUrl": "https://1rundinorun.vercel.app/image.jpg",
+    "imageUrl": "https://1rundinorun.vercel.app/image.jpg?v=2",
     "buttonTitle": "RunDİN",
     "splashImageUrl": "https://1rundinorun.vercel.app/splash.jpg",
     "splashBackgroundColor": "#6200EA",
@@ -30,11 +30,11 @@
       "runner",
       "classic"
     ],
-    "heroImageUrl": "https://1rundinorun.vercel.app/image.jpg",
+    "heroImageUrl": "https://1rundinorun.vercel.app/image.jpg?v=2",
     "tagline": "Survive. Score. Mint.",
     "ogTitle": "Run, Jump, and Mint",
     "ogDescription": "Outrun extinction. Mint your glory on Base.",
-    "ogImageUrl": "https://1rundinorun.vercel.app/image.jpg",
+    "ogImageUrl": "https://1rundinorun.vercel.app/image.jpg?v=2",
     "noindex": false
   }
 }
