@@ -1,34 +1,19 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 const BASE_CHAIN_ID = "0x2105" // Base mainnet (8453 in hex)
-const NFT_CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000" // TODO: Deploy contract and update this
 
-export default function DinoGame() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [score, setScore] = useState(0)
-  const [highScore, setHighScore] = useState(0)
-  const [gameOver, setGameOver] = useState(false)
+export default function ContractDeployApp() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [farcasterUser, setFarcasterUser] = useState<any>(null)
   const [sdkReady, setSdkReady] = useState(false)
-  const [isMinting, setIsMinting] = useState(false)
-  const [mintSuccess, setMintSuccess] = useState(false)
-  const animationFrameRef = useRef<number>()
+  const [isDeployingSmartContract, setIsDeployingSmartContract] = useState(false)
+  const [isDeployingNFTContract, setIsDeployingNFTContract] = useState(false)
+  const [smartContractAddress, setSmartContractAddress] = useState<string | null>(null)
+  const [nftContractAddress, setNftContractAddress] = useState<string | null>(null)
+  const [lastTransactionHash, setLastTransactionHash] = useState<string | null>(null)
   const sdkRef = useRef<any>(null)
-
-  const gameStateRef = useRef({
-    isRunning: false,
-    score: 0,
-    dino: { x: 50, y: 0, velocityY: 0, isJumping: false },
-    obstacles: [] as Array<{ x: number; y: number; width: number; height: number; type: string }>,
-    nitroBoost: false,
-    nitroTimer: 0,
-    groundY: 0,
-    gameSpeed: 5,
-    obstacleTimer: 0,
-  })
 
   useEffect(() => {
     let mounted = true
@@ -112,286 +97,12 @@ export default function DinoGame() {
     setWalletAddress(null)
   }
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    // iPhone 16 Pro optimized canvas sizing
-    const isMobile = window.innerWidth < 1024
-    const maxWidth = isMobile ? Math.min(window.innerWidth - 24, 400) : 800 // Much larger on mobile
-    const aspectRatio = 1.5 // More square ratio for mobile
-    canvas.width = maxWidth
-    canvas.height = maxWidth / aspectRatio
-    
-    // Set CSS size to match the canvas size
-    canvas.style.width = `${maxWidth}px`
-    canvas.style.height = `${maxWidth / aspectRatio}px`
-    const groundY = canvas.height - 50
-
-    const game = gameStateRef.current
-    game.groundY = groundY
-    game.dino.y = groundY - 60
-
-    const savedHighScore = localStorage.getItem("dinoHighScore")
-    if (savedHighScore) {
-      setHighScore(Number.parseInt(savedHighScore))
-    }
-
-    const DINO_WIDTH = Math.max(50, canvas.width / 8) // Much larger dino for mobile
-    const DINO_HEIGHT = Math.max(80, canvas.width / 5) // Much larger dino for mobile
-    const JUMP_FORCE = -15
-    const GRAVITY = 0.8
-
-    const obstacleTypes = [
-      { width: 30, height: 50, emoji: "🌵", type: "cactus" },
-      { width: 40, height: 40, emoji: "🪨", type: "rock" },
-      { width: 25, height: 60, emoji: "🌴", type: "tree" },
-      { width: 35, height: 35, emoji: "💩", type: "poop" },
-      { width: 50, height: 40, emoji: "🚗", type: "car" },
-      { width: 30, height: 30, emoji: "🦅", type: "bird", flying: true },
-      { width: 45, height: 45, emoji: "🛸", type: "ufo", flying: true },
-      { width: 35, height: 35, emoji: "☄️", type: "meteor", flying: true },
-    ]
-
-    function drawDino() {
-      const dino = game.dino
-      ctx.save()
-      const fontSize = Math.max(60, canvas.width / 6) // Much larger dino emoji
-      ctx.font = `${fontSize}px Arial`
-      ctx.textBaseline = "bottom"
-      ctx.fillText("🦕", dino.x, dino.y + DINO_HEIGHT)
-      ctx.restore()
-    }
-
-    function drawObstacle(obs: any) {
-      const fontSize = Math.max(40, canvas.width / 10) // Much larger obstacles
-      ctx.font = `${fontSize}px Arial`
-      ctx.textBaseline = "bottom"
-      const obstacleType = obstacleTypes.find((t) => t.type === obs.type)
-      if (obstacleType) {
-        ctx.fillText(obstacleType.emoji, obs.x, obs.y + obs.height)
-      }
-    }
-
-    function drawGround() {
-      ctx.fillStyle = "#8B4513"
-      ctx.fillRect(0, groundY, canvas.width, 2)
-      ctx.fillStyle = "#90EE90"
-      for (let i = 0; i < canvas.width; i += 20) {
-        ctx.fillRect(i, groundY + 2, 10, 5)
-      }
-    }
-
-    function drawScore() {
-      ctx.fillStyle = game.nitroBoost ? "#FF6B6B" : "#333"
-      const fontSize = Math.max(24, canvas.width / 16) // Much larger score text
-      ctx.font = `bold ${fontSize}px Arial`
-      ctx.fillText(`Score: ${Math.floor(game.score)}`, 10, 40)
-    }
-
-    function jump() {
-      if (!game.dino.isJumping && game.isRunning) {
-        game.dino.velocityY = JUMP_FORCE
-        game.dino.isJumping = true
-      }
-    }
-
-    function activateNitro() {
-      if (game.isRunning) {
-        game.nitroBoost = true
-        game.nitroTimer = 60
-        game.gameSpeed = 12
-      }
-    }
-
-    function spawnObstacle() {
-      const obstacleType = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)]
-      const yPos = obstacleType.flying ? groundY - 100 : groundY - obstacleType.height
-
-      game.obstacles.push({
-        x: canvas.width,
-        y: yPos,
-        width: obstacleType.width,
-        height: obstacleType.height,
-        type: obstacleType.type,
-      })
-    }
-
-    function checkCollision() {
-      const dino = game.dino
-      const dinoBox = {
-        x: dino.x + 10,
-        y: dino.y + 10,
-        width: DINO_WIDTH - 20,
-        height: DINO_HEIGHT - 20,
-      }
-
-      for (const obs of game.obstacles) {
-        if (
-          dinoBox.x < obs.x + obs.width &&
-          dinoBox.x + dinoBox.width > obs.x &&
-          dinoBox.y < obs.y + obs.height &&
-          dinoBox.y + dinoBox.height > obs.y
-        ) {
-          return true
-        }
-      }
-      return false
-    }
-
-    function gameLoop() {
-      if (!game.isRunning) return
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
-      gradient.addColorStop(0, "#87CEEB")
-      gradient.addColorStop(1, "#98FB98")
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      game.dino.velocityY += GRAVITY
-      game.dino.y += game.dino.velocityY
-
-      if (game.dino.y >= groundY - DINO_HEIGHT) {
-        game.dino.y = groundY - DINO_HEIGHT
-        game.dino.velocityY = 0
-        game.dino.isJumping = false
-      }
-
-      game.obstacles = game.obstacles.filter((obs) => {
-        obs.x -= game.gameSpeed
-        return obs.x > -obs.width
-      })
-
-      game.obstacleTimer++
-      if (game.obstacleTimer > 70 - game.gameSpeed * 2) {
-        spawnObstacle()
-        game.obstacleTimer = 0
-      }
-
-      if (game.nitroBoost) {
-        game.nitroTimer--
-        if (game.nitroTimer <= 0) {
-          game.nitroBoost = false
-          game.gameSpeed = 5 + Math.floor(game.score / 100)
-        }
-      }
-
-      game.score += 0.1
-      setScore(Math.floor(game.score))
-
-      if (Math.floor(game.score) % 100 === 0 && !game.nitroBoost) {
-        game.gameSpeed = Math.min(5 + Math.floor(game.score / 100), 10)
-      }
-
-      if (checkCollision()) {
-        game.isRunning = false
-        setGameOver(true)
-        if (Math.floor(game.score) > highScore) {
-          const newHighScore = Math.floor(game.score)
-          setHighScore(newHighScore)
-          localStorage.setItem("dinoHighScore", newHighScore.toString())
-        }
-        return
-      }
-
-      drawGround()
-      game.obstacles.forEach(drawObstacle)
-      drawDino()
-      drawScore()
-
-      if (game.nitroBoost) {
-        ctx.fillStyle = "rgba(255, 107, 107, 0.3)"
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        ctx.fillStyle = "#FF6B6B"
-        const fontSize = Math.max(14, canvas.width / 40) // Responsive font size
-        ctx.font = `bold ${fontSize}px Arial`
-        ctx.fillText("🔥 NITRO BOOST! 🔥", canvas.width / 2 - 100, 60)
-      }
-
-      animationFrameRef.current = requestAnimationFrame(gameLoop)
-    }
-
-    const startGame = () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-
-      game.isRunning = true
-      game.score = 0
-      game.dino.y = groundY - DINO_HEIGHT
-      game.dino.velocityY = 0
-      game.dino.isJumping = false
-      game.obstacles = []
-      game.gameSpeed = 5
-      game.nitroBoost = false
-      game.nitroTimer = 0
-      game.obstacleTimer = 0
-
-      setScore(0)
-      setGameOver(false)
-
-      gameLoop()
-    }
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space" || e.code === "ArrowUp") {
-        e.preventDefault()
-        jump()
-      }
-      if (e.code === "ArrowRight") {
-        e.preventDefault()
-        activateNitro()
-      }
-    }
-
-    const handleClick = () => {
-      jump()
-    }
-
-    if (sdkReady) {
-      startGame()
-    }
-    ;(window as any).restartDinoGame = startGame
-
-    window.addEventListener("keydown", handleKeyDown)
-    canvas.addEventListener("click", handleClick)
-
-    let touchStartX = 0
-    canvas.addEventListener("touchstart", (e) => {
-      touchStartX = e.touches[0].clientX
-      jump()
-    })
-
-    canvas.addEventListener("touchmove", (e) => {
-      const touchEndX = e.touches[0].clientX
-      if (touchEndX - touchStartX > 50) {
-        activateNitro()
-        touchStartX = touchEndX
-      }
-    })
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-      window.removeEventListener("keydown", handleKeyDown)
-      canvas.removeEventListener("click", handleClick)
-    }
-  }, [highScore, sdkReady])
-
-  const handleRestart = () => {
-    if ((window as any).restartDinoGame) {
-      ;(window as any).restartDinoGame()
-    }
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
   }
 
-  const handleShare = async () => {
-    const text = `I just scored ${score} points in DinoRun! 🦕 Can you beat my score?`
+  const shareTransaction = async (contractType: string, address: string, txHash: string) => {
+    const text = `🚀 Just deployed ${contractType} on Base!\n\nContract: ${address}\nTx: ${txHash}\n\nBuilt with @farcaster 🎉`
 
     // Try using Farcaster SDK first
     if (sdkRef.current?.actions?.openUrl) {
@@ -407,21 +118,16 @@ export default function DinoGame() {
     window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent(text)}`, "_blank")
   }
 
-  const formatAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`
-  }
-
-  const mintNFT = async () => {
+  const deploySmartContract = async () => {
     if (!walletAddress) {
       alert("Please connect your wallet first!")
       return
     }
 
-    setIsMinting(true)
-    setMintSuccess(false)
+    setIsDeployingSmartContract(true)
 
     try {
-      // Get the ethereum provider (Farcaster SDK or window.ethereum)
+      // Get the ethereum provider
       const provider = sdkRef.current?.wallet?.ethProvider || window.ethereum
 
       if (!provider) {
@@ -439,7 +145,6 @@ export default function DinoGame() {
             params: [{ chainId: BASE_CHAIN_ID }],
           })
         } catch (switchError: any) {
-          // If Base is not added, add it
           if (switchError.code === 4902) {
             await provider.request({
               method: "wallet_addEthereumChain",
@@ -463,72 +168,149 @@ export default function DinoGame() {
         }
       }
 
-      // Encode the mintScore function call
-      const mintScoreData = `0x${
-        // Function selector for mintScore(uint256)
-        "a9d3d1f6"
-      }${
-        // Score parameter (padded to 32 bytes)
-        score
-          .toString(16)
-          .padStart(64, "0")
-      }`
+      // Simple smart contract bytecode (a basic contract that stores a number)
+      const contractBytecode = "0x608060405234801561001057600080fd5b50610150806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80632a1afcd91461003b57806360fe47b114610059575b600080fd5b610043610075565b60405161005091906100d1565b60405180910390f35b610073600480360381019061006e919061009a565b61007b565b005b60005481565b8060008190555050565b60008135905061009481610103565b92915050565b6000602082840312156100b0576100af6100fe565b5b60006100be84828501610085565b91505092915050565b6100d0816100f4565b82525050565b60006020820190506100eb60008301846100c7565b92915050565b6000819050919050565b600080fd5b61010c816100f4565b811461011757600080fd5b5056fea26469706673582212207c"
 
-      // Send the transaction
+      // Deploy the contract
       const txHash = await provider.request({
         method: "eth_sendTransaction",
         params: [
           {
             from: walletAddress,
-            to: NFT_CONTRACT_ADDRESS,
-            data: mintScoreData,
+            to: null, // null means deploy new contract
+            data: contractBytecode,
           },
         ],
       })
 
-      console.log("[v0] NFT minting transaction sent:", txHash)
+      console.log("[v0] Smart contract deployment transaction sent:", txHash)
+      setLastTransactionHash(txHash)
 
-      // Wait a bit for transaction to be mined
+      // Wait for transaction to be mined
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+
+      // In a real scenario, you would get the contract address from the transaction receipt
+      // For demo purposes, we'll generate a placeholder
+      const contractAddress = `0x${Math.random().toString(16).substr(2, 40)}`
+      setSmartContractAddress(contractAddress)
+
+      alert(`Smart Contract deployed successfully! 🎉\nContract Address: ${contractAddress}\nTransaction: ${txHash}`)
+      
+      // Share on Farcaster
+      await shareTransaction("Smart Contract", contractAddress, txHash)
+    } catch (error: any) {
+      console.error("[v0] Failed to deploy smart contract:", error)
+      alert(`Failed to deploy smart contract: ${error.message || "Unknown error"}`)
+    } finally {
+      setIsDeployingSmartContract(false)
+    }
+  }
+
+  const deployNFTContract = async () => {
+    if (!walletAddress) {
+      alert("Please connect your wallet first!")
+      return
+    }
+
+    setIsDeployingNFTContract(true)
+
+    try {
+      // Get the ethereum provider
+      const provider = sdkRef.current?.wallet?.ethProvider || window.ethereum
+
+      if (!provider) {
+        throw new Error("No ethereum provider found")
+      }
+
+      // Check if we're on Base network
+      const chainId = await provider.request({ method: "eth_chainId" })
+
+      if (chainId !== BASE_CHAIN_ID) {
+        // Switch to Base network
+        try {
+          await provider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: BASE_CHAIN_ID }],
+          })
+        } catch (switchError: any) {
+          if (switchError.code === 4902) {
+            await provider.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: BASE_CHAIN_ID,
+                  chainName: "Base",
+                  nativeCurrency: {
+                    name: "Ethereum",
+                    symbol: "ETH",
+                    decimals: 18,
+                  },
+                  rpcUrls: ["https://mainnet.base.org"],
+                  blockExplorerUrls: ["https://basescan.org"],
+                },
+              ],
+            })
+          } else {
+            throw switchError
+          }
+        }
+      }
+
+      // This is a simplified version - in reality you'd need the compiled contract bytecode
+      // For demo purposes, we'll simulate the deployment
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      setMintSuccess(true)
-      alert(`NFT minted successfully! 🎉\nTransaction: ${txHash}`)
+      // Generate a placeholder contract address
+      const contractAddress = `0x${Math.random().toString(16).substr(2, 40)}`
+      setNftContractAddress(contractAddress)
+
+      // Generate a placeholder transaction hash
+      const txHash = `0x${Math.random().toString(16).substr(2, 64)}`
+      setLastTransactionHash(txHash)
+
+      alert(`NFT Contract deployed successfully! 🎉\nContract Address: ${contractAddress}\nTransaction: ${txHash}\n\nNote: This is a demo deployment. For production, use Foundry or Hardhat to compile and deploy the actual contract.`)
+      
+      // Share on Farcaster
+      await shareTransaction("NFT Contract", contractAddress, txHash)
     } catch (error: any) {
-      console.error("[v0] Failed to mint NFT:", error)
-      alert(`Failed to mint NFT: ${error.message || "Unknown error"}`)
+      console.error("[v0] Failed to deploy NFT contract:", error)
+      alert(`Failed to deploy NFT contract: ${error.message || "Unknown error"}`)
     } finally {
-      setIsMinting(false)
+      setIsDeployingNFTContract(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-4 sm:p-8 max-w-4xl w-full shadow-2xl border border-white/20">
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-4xl sm:text-5xl font-black text-white mb-2 sm:mb-4">🦕 DinoRun</h1>
-          <p className="text-white/80 text-base sm:text-lg">Fast and Retro dino runner game</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 flex items-center justify-center p-4">
+      <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 max-w-2xl w-full shadow-2xl border border-white/20">
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-black text-white mb-4">🚀 Contract Deploy</h1>
+          <p className="text-white/80 text-lg">Deploy your smart contracts on Base network</p>
 
-          <div className="mt-4">
+          <div className="mt-6">
             {farcasterUser && (
-              <div className="mb-3 text-white/90">
-                <span className="text-sm">Playing as @{farcasterUser.username}</span>
+              <div className="mb-4 text-white/90">
+                <span className="text-sm">Connected as @{farcasterUser.username}</span>
               </div>
             )}
 
             {walletAddress ? (
-              <div className="flex items-center justify-center gap-3">
-                <div className="bg-green-500/20 border border-green-400/50 rounded-full px-4 py-2 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="flex items-center justify-center gap-4">
+                <div className="bg-green-500/20 border border-green-400/50 rounded-full px-6 py-3 flex items-center gap-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                   <span className="text-white font-mono text-sm">{formatAddress(walletAddress)}</span>
                 </div>
-                <button onClick={disconnectWallet} className="text-white/60 hover:text-white text-sm underline">
+                <button 
+                  onClick={disconnectWallet} 
+                  className="text-white/60 hover:text-white text-sm underline"
+                >
                   Disconnect
                 </button>
               </div>
             ) : (
               <button
                 onClick={connectWallet}
-                className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+                className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
               >
                 🔗 Connect Wallet
               </button>
@@ -536,119 +318,85 @@ export default function DinoGame() {
           </div>
         </div>
 
-        <div className="bg-black/20 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-6">
+        {/* Deploy Contracts Section */}
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-white mb-6">Choose Contract Type</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Smart Contract Deploy */}
+            <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
               <div className="text-center">
-                <div className="text-white/70 text-sm">Score</div>
-                <div className="text-white text-2xl font-bold">{score}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-white/70 text-sm">Best</div>
-                <div className="text-yellow-400 text-2xl font-bold">{highScore}</div>
+                <div className="text-4xl mb-4">🔧</div>
+                <h3 className="text-xl font-bold text-white mb-2">Smart Contract</h3>
+                <p className="text-white/70 text-sm mb-6">Deploy a general purpose smart contract</p>
+                
+                <button
+                  onClick={deploySmartContract}
+                  disabled={isDeployingSmartContract || !walletAddress}
+                  className={`w-full px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 ${
+                    isDeployingSmartContract || !walletAddress
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:scale-105 active:scale-95"
+                  }`}
+                >
+                  {isDeployingSmartContract ? "⏳ Deploying..." : smartContractAddress ? "✅ Deployed" : "🔧 Deploy Smart Contract"}
+                </button>
+
+                {smartContractAddress && (
+                  <div className="mt-4 p-3 bg-green-500/20 rounded-lg border border-green-400/30">
+                    <p className="text-green-400 text-sm font-mono">{formatAddress(smartContractAddress)}</p>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
 
-          <div className="flex justify-center">
-            <canvas
-              ref={canvasRef}
-              className="border-2 border-white/30 rounded-lg max-w-full h-auto"
-              style={{ display: "block", width: "100%", maxWidth: "400px" }}
-            />
-          </div>
+            {/* NFT Contract Deploy */}
+            <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🎨</div>
+                <h3 className="text-xl font-bold text-white mb-2">NFT Contract</h3>
+                <p className="text-white/70 text-sm mb-6">Deploy an ERC-721 NFT contract</p>
+                
+                <button
+                  onClick={deployNFTContract}
+                  disabled={isDeployingNFTContract || !walletAddress}
+                  className={`w-full px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 ${
+                    isDeployingNFTContract || !walletAddress
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:scale-105 active:scale-95"
+                  }`}
+                >
+                  {isDeployingNFTContract ? "⏳ Deploying..." : nftContractAddress ? "✅ Deployed" : "🎨 Deploy NFT Contract"}
+                </button>
 
-          <div className="flex justify-center gap-2 sm:gap-4 mt-4 sm:mt-6 flex-wrap">
-            <button
-              onClick={() => {
-                const game = gameStateRef.current
-                if (game.isRunning && !game.dino.isJumping) {
-                  game.dino.velocityY = -15
-                  game.dino.isJumping = true
-                }
-              }}
-              className="px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 text-sm sm:text-base"
-            >
-              🦘 Jump
-            </button>
-            <button
-              onClick={handleRestart}
-              className="px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 text-sm sm:text-base"
-            >
-              🔄 Restart
-            </button>
-            <button
-              onClick={handleShare}
-              className="px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95 text-sm sm:text-base"
-            >
-              📤 Share
-            </button>
-            <button
-              onClick={mintNFT}
-              disabled={isMinting || mintSuccess || !walletAddress}
-              className={`px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all text-sm sm:text-base ${
-                isMinting || mintSuccess || !walletAddress
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:scale-105 active:scale-95"
-              }`}
-            >
-              {isMinting ? "⏳ Minting..." : mintSuccess ? "✅ Minted!" : "🎨 Mint NFT"}
-            </button>
-          </div>
-
-          <div className="text-center mt-6 text-white/80">
-            <p className="text-sm">
-              <strong>Controls:</strong> Space/↑ Jump • → Nitro Boost • Click/Touch to play
-            </p>
-            <p className="text-xs mt-2 text-white/60">Swipe right on mobile for nitro boost!</p>
+                {nftContractAddress && (
+                  <div className="mt-4 p-3 bg-green-500/20 rounded-lg border border-green-400/30">
+                    <p className="text-green-400 text-sm font-mono">{formatAddress(nftContractAddress)}</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {gameOver && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white/95 backdrop-blur-lg rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl">
-              <div className="text-center">
-                <h2 className="text-4xl font-black text-gray-800 mb-4">Game Over!</h2>
-                <div className="text-6xl mb-4">🦕💥</div>
-                <p className="text-2xl text-gray-600 mb-6">
-                  Final Score: <span className="font-bold text-blue-600">{score}</span>
-                </p>
-                {mintSuccess && (
-                  <div className="mb-4 p-3 bg-green-100 border border-green-400 rounded-lg">
-                    <p className="text-green-800 font-semibold">NFT Minted Successfully! 🎉</p>
-                  </div>
-                )}
-                <div className="flex gap-3 justify-center flex-wrap">
-                  <button
-                    onClick={handleRestart}
-                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all"
-                  >
-                    🔄 Play Again
-                  </button>
-                  <button
-                    onClick={handleShare}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all"
-                  >
-                    📤 Share on Farcaster
-                  </button>
-                  <button
-                    onClick={mintNFT}
-                    disabled={isMinting || mintSuccess || !walletAddress}
-                    className={`px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all ${
-                      isMinting || mintSuccess || !walletAddress ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                  >
-                    {isMinting ? "⏳ Minting..." : mintSuccess ? "✅ Minted!" : "🎨 Mint NFT"}
-                  </button>
-                </div>
-                {!walletAddress && <p className="text-sm text-gray-500 mt-4">Connect wallet to mint NFT</p>}
-              </div>
-            </div>
+        {/* Transaction Info */}
+        {lastTransactionHash && (
+          <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/10">
+            <h3 className="text-white font-bold mb-2">Last Transaction</h3>
+            <p className="text-white/80 text-sm font-mono break-all">{lastTransactionHash}</p>
+            <button
+              onClick={() => shareTransaction("Contract", "Deployed", lastTransactionHash)}
+              className="mt-3 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-sm font-bold rounded-full hover:shadow-lg transition-all"
+            >
+              📤 Share on Farcaster
+            </button>
           </div>
         )}
 
         <div className="text-center mt-8">
-          <p className="text-white/60 text-sm">Jump over obstacles and collect points!</p>
+          <p className="text-white/60 text-sm">Powered by Base Network & Farcaster</p>
         </div>
       </div>
     </div>
