@@ -128,7 +128,7 @@ export function TokenMinter() {
           Your DINO Token Balance
         </h3>
         <p className="text-3xl font-bold text-green-400 mb-2">
-          {formatBalance(balance)} DINO
+          {formatBalance(balance as bigint)} DINO
         </p>
         <p className="text-gray-400">
           {hasMinted ? 'You have already minted tokens' : 'Ready to mint your first tokens!'}
