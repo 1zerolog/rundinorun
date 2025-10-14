@@ -121,7 +121,7 @@ export function NFTMinter() {
         </p>
         {totalSupply && maxSupply && (
           <p className="text-sm text-gray-400 mt-2">
-            {totalSupply.toString()} / {maxSupply.toString()} minted
+            {(totalSupply as bigint).toString()} / {(maxSupply as bigint).toString()} minted
           </p>
         )}
       </div>

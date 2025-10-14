@@ -114,7 +114,7 @@ export function TokenMinter() {
         </p>
         {totalSupply && maxSupply && (
           <p className="text-sm text-gray-400 mt-2">
-            {formatBalance(totalSupply)} / {formatBalance(maxSupply)} tokens minted
+            {formatBalance(totalSupply as bigint)} / {formatBalance(maxSupply as bigint)} tokens minted
           </p>
         )}
       </div>
