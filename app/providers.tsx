@@ -6,7 +6,7 @@ import { publicProvider } from 'wagmi/providers/public'
 import { RainbowKitProvider, getDefaultWallets } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
 
-const { chains, provider, webSocketProvider } = configureChains(
+const { chains, publicClient, webSocketPublicClient } = configureChains(
   [base],
   [publicProvider()]
 )
@@ -20,8 +20,8 @@ const { connectors } = getDefaultWallets({
 const config = createConfig({
   autoConnect: true,
   connectors,
-  provider,
-  webSocketProvider,
+  publicClient,
+  webSocketPublicClient,
 })
 
 export function Providers({ children }: { children: React.ReactNode }) {
