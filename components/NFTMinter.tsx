@@ -119,11 +119,11 @@ export function NFTMinter() {
         <p className="text-gray-300">
           Create unique NFTs with custom metadata or random generation
         </p>
-        {totalSupply && maxSupply && (
+        {totalSupply && maxSupply ? (
           <p className="text-sm text-gray-400 mt-2">
             {(totalSupply as bigint).toString()} / {(maxSupply as bigint).toString()} minted
           </p>
-        )}
+        ) : null}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">

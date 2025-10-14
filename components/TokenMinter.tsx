@@ -112,11 +112,11 @@ export function TokenMinter() {
         <p className="text-gray-300">
           Mint 100 DINO tokens with a single transaction
         </p>
-        {totalSupply && maxSupply && (
+        {totalSupply && maxSupply ? (
           <p className="text-sm text-gray-400 mt-2">
             {formatBalance(totalSupply as bigint)} / {formatBalance(maxSupply as bigint)} tokens minted
           </p>
-        )}
+        ) : null}
       </div>
 
       {/* Balance Display */}
