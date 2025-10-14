@@ -131,7 +131,7 @@ export function TokenMinter() {
           {formatBalance(balance as bigint)} DINO
         </p>
         <p className="text-gray-400">
-          {hasMinted ? 'You have already minted tokens' : 'Ready to mint your first tokens!'}
+          {(hasMinted as boolean) ? 'You have already minted tokens' : 'Ready to mint your first tokens!'}
         </p>
       </div>
 
@@ -158,8 +158,8 @@ export function TokenMinter() {
                 </div>
                 <div>
                   <span className="text-gray-400">Status:</span>
-                  <p className={`font-semibold ${hasMinted ? 'text-red-400' : 'text-green-400'}`}>
-                    {hasMinted ? 'Already Minted' : 'Available'}
+                  <p className={`font-semibold ${(hasMinted as boolean) ? 'text-red-400' : 'text-green-400'}`}>
+                    {(hasMinted as boolean) ? 'Already Minted' : 'Available'}
                   </p>
                 </div>
                 <div>
@@ -171,10 +171,10 @@ export function TokenMinter() {
 
             <button
               onClick={handleMintTokens}
-              disabled={isMintingTokens || isMinting || hasMinted}
+              disabled={isMintingTokens || isMinting || (hasMinted as boolean)}
               className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              {isMintingTokens ? 'Minting...' : hasMinted ? 'Already Minted' : 'Mint 100 DINO Tokens (0.001 ETH)'}
+              {isMintingTokens ? 'Minting...' : (hasMinted as boolean) ? 'Already Minted' : 'Mint 100 DINO Tokens (0.001 ETH)'}
             </button>
           </div>
         </div>
