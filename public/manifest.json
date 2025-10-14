@@ -1,0 +1,22 @@
+{
+  "name": "RundinoRun - Farcaster Mini App",
+  "short_name": "RundinoRun",
+  "description": "Deploy your unique contract on Base and mint NFTs",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#8A63D2",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
